@@ -1,0 +1,6 @@
+{
+  "name": "Selvia",
+  "description": "Premium onboarding and identity progression authentication flow for Selvia.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

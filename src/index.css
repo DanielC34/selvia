@@ -1,0 +1,154 @@
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&family=Playfair+Display:ital,wght@0,400..900;1,400..900&family=JetBrains+Mono:wght@400;500&display=swap');
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "DM Sans", ui-sans-serif, system-ui, sans-serif;
+  --font-headline: "Playfair Display", "Georgia", serif;
+  --font-display: "Playfair Display", "Georgia", serif;
+  --font-serif: "Playfair Display", "Georgia", serif;
+  --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, monospace;
+
+  /* Color definitions optimized for Sophisticated Dark design theme */
+  --color-background-obsidian: #050505;
+  --color-background: #050505;
+  --color-surface: #070707;
+  --color-surface-dim: #050505;
+  --color-surface-bright: #1C1C1C;
+  --color-surface-container-lowest: #020202;
+  --color-surface-container-low: #080808;
+  --color-surface-container: #0A0A0A;
+  --color-surface-container-high: #121212;
+  --color-surface-container-highest: #1A1A1A;
+  --color-on-surface: #E0E0E0;
+  --color-on-surface-variant: #888888;
+  --color-inverse-surface: #E0E0E0;
+  --color-inverse-on-surface: #050505;
+  --color-outline: #333333;
+  --color-outline-variant: #1A1A1A;
+  --color-primary: #E0E0E0;
+  --color-on-primary: #050505;
+  --color-primary-container: #050505;
+  --color-on-primary-container: #888888;
+  --color-secondary: #AAAAAA;
+  --color-on-secondary: #050505;
+  --color-secondary-container: #111111;
+  --color-on-secondary-container: #CCCCCC;
+  --color-tertiary: #E0E0E0;
+  --color-on-tertiary: #050505;
+  --color-tertiary-container: #080808;
+  --color-on-tertiary-container: #888888;
+  
+  --color-emerald-accent: #FFFFFF;
+  --color-emerald-accent-glow: rgba(255, 255, 255, 0.05);
+
+  --animate-splash-entrance: splashEntrance 2s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+  --animate-subtle-glow: subtleGlow 4s ease-in-out infinite alternate;
+  --animate-fade-in-up: fadeInUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  --animate-fade-in-quick: fadeIn 0.3s ease-out forwards;
+}
+
+@keyframes splashEntrance {
+  0% {
+    opacity: 0;
+    transform: translateY(20px) scale(0.95);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes subtleGlow {
+  0% {
+    filter: drop-shadow(0 0 10px rgba(255, 255, 255, 0.05));
+  }
+  100% {
+    filter: drop-shadow(0 0 25px rgba(255, 255, 255, 0.15));
+  }
+}
+
+@keyframes fadeInUp {
+  0% {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeIn {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+/* Sophisticated Dark panel and layout classes */
+.glass-panel {
+  background: #0A0A0A;
+  border: 1px solid #1A1A1A;
+}
+
+.glow-effect:hover {
+  box-shadow: inset 0 0 20px rgba(255, 255, 255, 0.02);
+  border-color: #333333;
+}
+
+.input-underline {
+  background: transparent;
+  border: none;
+  border-bottom: 1px solid #1A1A1A;
+  border-radius: 0;
+  padding-left: 0;
+  padding-right: 0;
+  transition: border-color 0.3s ease;
+}
+
+.input-underline:focus {
+  outline: none;
+  box-shadow: none;
+  border-bottom-color: #FFFFFF;
+}
+
+.input-glow:focus {
+  outline: none;
+  border-color: #FFFFFF;
+  box-shadow: 0 0 0 1px #FFFFFF;
+  transition: all 0.3s ease;
+}
+
+.ambient-glow {
+  position: absolute;
+  width: 60vh;
+  height: 60vh;
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.02) 0%, rgba(5, 5, 5, 0) 70%);
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  z-index: 0;
+  pointer-events: none;
+}
+
+/* Custom scrollbar to match deep minimalist black theme */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: #050505;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #1A1A1A;
+  border-radius: 9999px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #333333;
+}
