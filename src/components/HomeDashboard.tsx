@@ -137,9 +137,9 @@ export default function HomeDashboard({
     if (isCompletedJustNow) {
       nextProfile.lastCompletedDate = todayStr;
       
-      // Multi-haptics feedback
+      // Soft micro-haptics double-pulse
       if (navigator.vibrate) {
-        navigator.vibrate([30, 80, 50, 120]);
+        navigator.vibrate([30, 30]);
       }
 
       setJustActivated(true);
@@ -185,11 +185,11 @@ export default function HomeDashboard({
         {floatingXp.map(item => (
           <motion.span
             key={item.id}
-            initial={{ opacity: 1, scale: 0.9, y: 0 }}
-            animate={{ opacity: 0, scale: 1.2, y: -80 }}
+            initial={{ opacity: 0, y: 0 }}
+            animate={{ opacity: [0, 1, 0.8, 0], y: -40 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.8, ease: 'easeOut' }}
-            className={`absolute font-mono text-xs font-bold pointer-events-none z-50 py-1 px-2 border rounded-full bg-black/95 text-white border-white/20`}
+            className="absolute font-mono text-[9.5px] tracking-widest text-[#AAA] pointer-events-none z-50 select-none"
             style={{ left: item.x, top: item.y }}
           >
             {item.text}
@@ -266,68 +266,17 @@ export default function HomeDashboard({
 
         </div>
 
-        {/* Staggered category and discipline float up elements */}
+        {/* Pristine, calm completion confirmation float */}
         <AnimatePresence>
           {justActivated && (
-            <div className="absolute inset-x-0 top-0 bottom-0 pointer-events-none flex items-center justify-center overflow-hidden h-full">
-              {/* Spiritual XP float */}
+            <div className="absolute inset-0 pointer-events-none flex items-center justify-center overflow-hidden">
               <motion.div
-                initial={{ opacity: 0, y: 30, scale: 0.8 }}
-                animate={{ opacity: [0, 1, 1, 0], y: -90, x: -65, scale: 1 }}
-                transition={{ delay: 0.4, duration: 3.2, ease: "easeOut" }}
-                className="absolute font-mono text-[9px] tracking-widest text-[#888] bg-[#0A0A0A]/95 py-1 px-3 border border-white/5 rounded-full shadow-lg"
+                initial={{ opacity: 0, scale: 0.95, y: 10 }}
+                animate={{ opacity: [0, 1, 1, 0], scale: 1, y: -40 }}
+                transition={{ duration: 3.5, ease: "easeOut" }}
+                className="absolute font-mono text-[9px] tracking-[0.25em] text-emerald-400 bg-black/95 py-2 px-4 border border-emerald-500/20 shadow-[0_4px_16px_rgba(0,0,0,0.9)]"
               >
-                +100 Spiritual XP
-              </motion.div>
-              
-              {/* Physical XP float */}
-              <motion.div
-                initial={{ opacity: 0, y: 30, scale: 0.8 }}
-                animate={{ opacity: [0, 1, 1, 0], y: -130, x: 45, scale: 1 }}
-                transition={{ delay: 0.8, duration: 3.2, ease: "easeOut" }}
-                className="absolute font-mono text-[9px] tracking-widest text-[#888] bg-[#0A0A0A]/95 py-1 px-3 border border-white/5 rounded-full shadow-lg"
-              >
-                +100 Physical XP
-              </motion.div>
-
-              {/* Reading XP float */}
-              <motion.div
-                initial={{ opacity: 0, y: 30, scale: 0.8 }}
-                animate={{ opacity: [0, 1, 1, 0], y: -60, x: 75, scale: 1 }}
-                transition={{ delay: 1.2, duration: 3.2, ease: "easeOut" }}
-                className="absolute font-mono text-[9px] tracking-widest text-[#888] bg-[#0A0A0A]/95 py-1 px-3 border border-white/5 rounded-full shadow-lg"
-              >
-                +100 Reading XP
-              </motion.div>
-
-              {/* Career XP float */}
-              <motion.div
-                initial={{ opacity: 0, y: 30, scale: 0.8 }}
-                animate={{ opacity: [0, 1, 1, 0], y: -110, x: -75, scale: 1 }}
-                transition={{ delay: 1.6, duration: 3.2, ease: "easeOut" }}
-                className="absolute font-mono text-[9px] tracking-widest text-[#888] bg-[#0A0A0A]/95 py-1 px-3 border border-white/5 rounded-full shadow-lg"
-              >
-                +100 Career XP
-              </motion.div>
-
-              {/* Builder XP float */}
-              <motion.div
-                initial={{ opacity: 0, y: 30, scale: 0.8 }}
-                animate={{ opacity: [0, 1, 1, 0], y: -70, x: -40, scale: 1 }}
-                transition={{ delay: 2.0, duration: 3.2, ease: "easeOut" }}
-                className="absolute font-mono text-[9px] tracking-widest text-[#888] bg-[#0A0A0A]/95 py-1 px-3 border border-white/5 rounded-full shadow-lg"
-              >
-                +100 Builder XP
-              </motion.div>
-
-              {/* Discipline XP float */}
-              <motion.div
-                initial={{ opacity: 0, y: 40, scale: 0.9 }}
-                animate={{ opacity: [0, 1, 1, 0], y: -160, x: 0, scale: 1.1 }}
-                transition={{ delay: 2.6, duration: 3.6, ease: "easeOut" }}
-                className="absolute font-mono text-xs font-semibold tracking-widest text-emerald-400 bg-black py-1.5 px-4 border border-emerald-500/10 rounded-full shadow-xl"
-              >
-                +500 Discipline XP
+                +500 DISCIPLINE XP
               </motion.div>
             </div>
           )}

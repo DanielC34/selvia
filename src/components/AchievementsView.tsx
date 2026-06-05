@@ -127,9 +127,9 @@ export default function AchievementsView({ userProfile }: AchievementsViewProps)
               </span>
 
               {/* Description reveal hover block on desktop */}
-              <div className="absolute inset-0 bg-[#0A0A0A] opacity-0 group-hover:opacity-100 transition-opacity duration-300 px-4 flex flex-col items-center justify-center text-center select-none pointer-events-none border border-white/20">
+              <div className="absolute inset-0 bg-[#0A0A0A] opacity-0 group-hover:opacity-100 transition-opacity duration-300 px-4 flex flex-col items-center justify-center text-center select-none pointer-events-none border border-white/5">
                 <span className="text-[10px] font-mono text-emerald-400 uppercase tracking-widest font-semibold block mb-1">
-                  {isUnlocked ? 'UNLOCKED' : 'SLOCKED'}
+                  {isUnlocked ? 'UNLOCKED' : 'LOCKED'}
                 </span>
                 <p className="text-[11px] text-[#BBB] leading-relaxed font-sans px-1">
                   {ach.descriptor}
