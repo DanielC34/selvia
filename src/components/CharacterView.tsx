@@ -86,7 +86,7 @@ export default function CharacterView({ userProfile }: CharacterViewProps) {
             {disciplineScore}
           </span>
           <span className="text-[10px] font-mono tracking-widest text-white/60 mt-3 flex items-center gap-1 bg-white/5 border border-white/10 px-2 py-0.5 uppercase">
-            📈 Top 12%
+            Top 12% Percentile
           </span>
         </div>
       </section>
@@ -132,7 +132,7 @@ export default function CharacterView({ userProfile }: CharacterViewProps) {
       <section className="space-y-4">
         <div className="flex items-center gap-2 pb-1 border-b border-[#141414]">
           <span className="text-[10px] uppercase font-mono tracking-[0.25em] text-[#555] font-semibold">
-            🤚 Identity Focus
+            Identity Framework
           </span>
         </div>
 
@@ -157,7 +157,7 @@ export default function CharacterView({ userProfile }: CharacterViewProps) {
       <section className="space-y-5">
         <div className="flex items-center gap-2 pb-1 border-b border-[#141414]">
           <span className="text-[10px] uppercase font-mono tracking-[0.25em] text-[#555] font-semibold">
-            📊 Focus Categories
+            Focus Categories
           </span>
         </div>
 

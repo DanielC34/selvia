@@ -178,11 +178,7 @@ export default function HomeDashboard({
   };
 
   return (
-    <div className={`space-y-8 pb-12 select-none relative transition-all duration-1000 ${
-      isCompleted 
-        ? 'opacity-85 text-[#777]' // subtly dims / softens background contrast and reduces visual noise
-        : 'opacity-100 text-[#E0E0E0]'
-    }`}>
+    <div className="space-y-8 pb-12 select-none relative text-[#E0E0E0]">
       
       {/* Dynamic Floating XP element list */}
       <AnimatePresence>
@@ -338,156 +334,158 @@ export default function HomeDashboard({
         </AnimatePresence>
       </section>
 
-      {isCompleted ? (
-        <section className="flex flex-col items-center justify-center py-6 text-center select-none">
-          <motion.div
-            initial={{ opacity: 0, y: 15 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.2, duration: 1.5, ease: "easeOut" }}
-            className="space-y-5"
-          >
-            <h2 className="font-serif italic font-light text-3xl md:text-4xl text-white tracking-widest leading-relaxed">
+      {isCompleted && (
+        <motion.section 
+          initial={{ opacity: 0, y: 15 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 1.0, ease: "easeOut" }}
+          className="flex flex-col items-center justify-center p-6 border border-emerald-500/10 bg-emerald-950/5 text-center select-none"
+        >
+          <div className="space-y-4">
+            <h2 className="font-serif italic font-light text-2xl text-white tracking-widest leading-relaxed">
               Day complete.
             </h2>
-            <p className="text-[10px] md:text-xs font-sans tracking-[0.25em] text-[#666] uppercase">
+            <p className="text-[10px] sm:text-xs font-sans tracking-[0.25em] text-[#888] uppercase">
               You showed up today.
             </p>
 
-            <div className="pt-6 flex flex-col items-center gap-3">
-              <span className="inline-block py-1.5 px-4 border border-white/5 bg-[#0A0A0A] text-[9.5px] font-mono text-emerald-400/80 uppercase tracking-[0.3em] font-semibold">
+            <div className="pt-2 flex flex-col items-center gap-1">
+              <span className="inline-block py-1 px-3 border border-emerald-500/10 bg-emerald-950/20 text-[9px] font-mono text-emerald-400 uppercase tracking-[0.25em] font-semibold">
                 Consistency recorded
               </span>
-              <p className="text-[9px] text-[#444] uppercase tracking-[0.25em] font-mono">
-                Momentum maintained.
+              <p className="text-[8.5px] text-[#555] uppercase tracking-[0.15em] font-mono mt-1">
+                Momentum maintained for your archetype.
               </p>
             </div>
-          </motion.div>
-        </section>
-      ) : (
-        <>
-          {/* Quick 3-Tile Status Banner Area */}
-          <section className="grid grid-cols-3 gap-3.5">
-            
-            {/* Card 1: Discipline Category Level */}
-            <div className="bg-[#0A0A0A] border border-[#141414] rounded-lg p-4 py-5 flex flex-col items-center text-center shadow-[0_2px_8px_rgba(0,0,0,0.8)]">
-              <span className="font-serif text-xl font-light text-white tracking-wide block">
-                {getDisciplineTier(userProfile.level)}
-              </span>
-              <span className="text-[9px] font-mono uppercase tracking-[0.2em] text-[#555] mt-1.5 font-semibold">
-                Tiers
-              </span>
-            </div>
+          </div>
+        </motion.section>
+      )}
 
-            {/* Card 2: Today Accumulated XP */}
-            <div className="bg-[#0A0A0A] border border-[#141414] rounded-lg p-4 py-5 flex flex-col items-center text-center shadow-[0_2px_8px_rgba(0,0,0,0.8)]">
-              <span className="font-sans text-xl font-medium text-white tracking-wide block">
-                +{userProfile.xpToday}
-              </span>
-              <span className="text-[9px] font-mono uppercase tracking-[0.2em] text-[#555] mt-1.5 font-semibold">
-                XP logged today
-              </span>
-            </div>
+      {/* Quick 3-Tile Status Banner Area */}
+      <section className="grid grid-cols-3 gap-3.5">
+        
+        {/* Card 1: Discipline Category Level */}
+        <div className="bg-[#0A0A0A] border border-[#141414] rounded-lg p-4 py-5 flex flex-col items-center text-center shadow-[0_2px_8px_rgba(0,0,0,0.8)]">
+          <span className="font-serif text-xl font-light text-white tracking-wide block">
+            {getDisciplineTier(userProfile.level)}
+          </span>
+          <span className="text-[9px] font-mono uppercase tracking-[0.2em] text-[#555] mt-1.5 font-semibold">
+            Tiers
+          </span>
+        </div>
 
-            {/* Card 3: Continuous Streak */}
-            <div className="bg-[#0A0A0A] border border-[#141414] rounded-lg p-4 py-5 flex flex-col items-center text-center shadow-[0_2px_8px_rgba(0,0,0,0.8)]">
-              <div className="flex items-center gap-1">
-                <Flame className="w-4 h-4 text-white fill-white/10" />
-                <span className="font-sans text-xl font-bold text-white tracking-wide block">
-                  {userProfile.streak}
-                </span>
-              </div>
-              <span className="text-[9px] font-mono uppercase tracking-[0.2em] text-[#555] mt-1.5 font-semibold">
-                Daily streak
-              </span>
-            </div>
+        {/* Card 2: Today Accumulated XP */}
+        <div className="bg-[#0A0A0A] border border-[#141414] rounded-lg p-4 py-5 flex flex-col items-center text-center shadow-[0_2px_8px_rgba(0,0,0,0.8)]">
+          <span className="font-sans text-xl font-medium text-white tracking-wide block">
+            +{userProfile.xpToday}
+          </span>
+          <span className="text-[9px] font-mono uppercase tracking-[0.2em] text-[#555] mt-1.5 font-semibold">
+            XP logged today
+          </span>
+        </div>
 
-          </section>
+        {/* Card 3: Continuous Streak */}
+        <div className="bg-[#0A0A0A] border border-[#141414] rounded-lg p-4 py-5 flex flex-col items-center text-center shadow-[0_2px_8px_rgba(0,0,0,0.8)]">
+          <div className="flex items-center gap-1">
+            <Flame className="w-4 h-4 text-white fill-white/10" />
+            <span className="font-sans text-xl font-bold text-white tracking-wide block">
+              {userProfile.streak}
+            </span>
+          </div>
+          <span className="text-[9px] font-mono uppercase tracking-[0.2em] text-[#555] mt-1.5 font-semibold">
+            Daily streak
+          </span>
+        </div>
 
-          {/* Daily Progress Core Block List */}
-          <section className="space-y-4">
-            
-            <div className="flex justify-between items-end pb-1 border-b border-[#141414] mb-5">
-              <h2 className="font-serif italic font-light text-xl text-white tracking-wide">
-                Daily commitments
-              </h2>
-              <span className="font-mono text-[10px] text-[#666] uppercase tracking-widest font-semibold">
-                {completedCount}/{totalCount} completed
-              </span>
-            </div>
+      </section>
 
-            <div className="space-y-3.5">
-              {dailyActions.map((action) => (
-                <motion.div
-                  layoutId={`action-card-${action.id}`}
-                  key={action.id}
-                  onClick={(e) => handleToggleAction(action.id, e)}
-                  className={`w-full text-left p-4 rounded-lg bg-[#0A0A0A] border transition-all duration-300 flex items-center justify-between cursor-pointer select-none ${
-                    action.completed 
-                      ? 'border-white/20 bg-white/[0.01]' 
-                      : 'border-[#151515] hover:border-[#252525] hover:bg-[#0c0c0c]'
-                  }`}
-                >
-                  
-                  {/* Left description parameters */}
-                  <div className="flex items-center gap-4 py-0.5 truncate">
-                    <div className={`w-10 h-10 rounded-full border flex items-center justify-center transition-colors duration-300 shadow-[0_1px_5px_rgba(0,0,0,0.5)] ${
-                      action.completed 
-                        ? 'border-white/30 bg-white/5' 
-                        : 'border-[#222] bg-[#0E0E0E]'
-                    }`}>
-                      {getCategoryIcon(action.category)}
-                    </div>
-                    <div className="truncate">
-                      <span className={`text-[10px] uppercase font-mono tracking-widest font-semibold block transition-colors duration-300 ${
-                        action.completed ? 'text-[#888]' : 'text-[#444]'
-                      }`}>
-                        {getCategoryTitle(action.category)}
-                      </span>
-                      <span className={`text-sm tracking-wide font-sans mt-0.5 block truncate transition-all duration-300 ${
-                        action.completed ? 'text-[#777] line-through decoration-white/20' : 'text-white'
-                      }`}>
-                        {action.name}
-                      </span>
-                    </div>
-                  </div>
+      {/* Daily Progress Core Block List */}
+      <section className="space-y-4">
+        
+        <div className="flex justify-between items-end pb-1 border-b border-[#141414] mb-5">
+          <h2 className="font-serif italic font-light text-xl text-white tracking-wide">
+            Daily commitments
+          </h2>
+          <span className="font-mono text-[10px] text-[#666] uppercase tracking-widest font-semibold">
+            {completedCount}/{totalCount} completed
+          </span>
+        </div>
 
-                  {/* Right selector circle stamp */}
-                  <div className="pl-4">
-                    <div className={`w-8 h-8 rounded-full border transition-all duration-300 flex items-center justify-center shadow-[0_2px_8px_rgba(0,0,0,0.5)] ${
-                      action.completed 
-                        ? 'bg-white border-white text-black' 
-                        : 'bg-transparent border-[#222]'
-                    }`}>
-                      {action.completed ? (
-                        <Check className="w-4 h-4 stroke-[3]" />
-                      ) : (
-                        <div className="w-2 h-2 rounded-full bg-[#111]" />
-                      )}
-                    </div>
-                  </div>
-
-                </motion.div>
-              ))}
-            </div>
-
-          </section>
-
-          {/* Floating Action/Prompt: Review Journal */}
-          <section className="bg-[#0A0A0A] border border-[#151515] p-5 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 shadow-[0_4px_12px_rgba(0,0,0,0.8)]">
-            <div>
-              <span className="text-[8px] font-mono uppercase tracking-[0.25em] text-[#555] font-semibold">Reflection</span>
-              <h3 className="font-serif italic font-light text-base text-white mt-1">Reflection due</h3>
-              <p className="text-[10px] text-[#666] uppercase tracking-wider mt-0.5">Record reflections to keep track of daily insights.</p>
-            </div>
-            <button
-              onClick={() => onNavigateToTab('reflection')}
-              className="w-full sm:w-auto bg-white hover:bg-neutral-200 text-black px-5 py-2.5 font-headline font-semibold text-[10px] uppercase tracking-[0.2em] rounded-none active:scale-95 transition-all flex items-center justify-center gap-2 cursor-pointer shadow-[0_2px_8px_rgba(255,255,255,0.05)]"
+        <div className="space-y-3.5">
+          {dailyActions.map((action) => (
+            <motion.div
+              layoutId={`action-card-${action.id}`}
+              key={action.id}
+              onClick={(e) => handleToggleAction(action.id, e)}
+              className={`w-full text-left p-4 rounded-lg bg-[#0A0A0A] border transition-all duration-300 flex items-center justify-between select-none ${
+                isCompleted
+                  ? 'border-white/15 bg-white/[0.01] opacity-75 cursor-default'
+                  : action.completed 
+                  ? 'border-white/20 bg-white/[0.01] cursor-pointer' 
+                  : 'border-[#151515] hover:border-[#252525] hover:bg-[#0c0c0c] cursor-pointer'
+              }`}
             >
-              <span>Reflect</span>
-              <ChevronRight className="w-3.5 h-3.5" />
-            </button>
-          </section>
-        </>
+              
+              {/* Left description parameters */}
+              <div className="flex items-center gap-4 py-0.5 truncate">
+                <div className={`w-10 h-10 rounded-full border flex items-center justify-center transition-colors duration-300 shadow-[0_1px_5px_rgba(0,0,0,0.5)] ${
+                  action.completed 
+                    ? 'border-white/30 bg-white/5' 
+                    : 'border-[#222] bg-[#0E0E0E]'
+                }`}>
+                  {getCategoryIcon(action.category)}
+                </div>
+                <div className="truncate">
+                  <span className={`text-[10px] uppercase font-mono tracking-widest font-semibold block transition-colors duration-300 ${
+                    action.completed ? 'text-[#888]' : 'text-[#444]'
+                  }`}>
+                    {getCategoryTitle(action.category)}
+                  </span>
+                  <span className={`text-sm tracking-wide font-sans mt-0.5 block truncate transition-all duration-300 ${
+                    action.completed ? 'text-[#888] line-through decoration-white/20' : 'text-white'
+                  }`}>
+                    {action.name}
+                  </span>
+                </div>
+              </div>
+
+              {/* Right selector circle stamp */}
+              <div className="pl-4">
+                <div className={`w-8 h-8 rounded-full border transition-all duration-300 flex items-center justify-center shadow-[0_2px_8px_rgba(0,0,0,0.5)] ${
+                  action.completed 
+                    ? 'bg-white border-white text-black' 
+                    : 'bg-transparent border-[#222]'
+                }`}>
+                  {action.completed ? (
+                    <Check className="w-4 h-4 stroke-[3]" />
+                  ) : (
+                    <div className="w-2 h-2 rounded-full bg-[#111]" />
+                  )}
+                </div>
+              </div>
+
+            </motion.div>
+          ))}
+        </div>
+
+      </section>
+
+      {/* Floating Action/Prompt: Review Journal */}
+      {!isCompleted && (
+        <section className="bg-[#0A0A0A] border border-[#151515] p-5 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 shadow-[0_4px_12px_rgba(0,0,0,0.8)]">
+          <div>
+            <span className="text-[8px] font-mono uppercase tracking-[0.25em] text-[#555] font-semibold">Reflection</span>
+            <h3 className="font-serif italic font-light text-base text-white mt-1">Reflection due</h3>
+            <p className="text-[10px] text-[#666] uppercase tracking-wider mt-0.5">Record reflections to keep track of daily insights.</p>
+          </div>
+          <button
+            onClick={() => onNavigateToTab('reflection')}
+            className="w-full sm:w-auto bg-white hover:bg-neutral-200 text-black px-5 py-2.5 font-headline font-semibold text-[10px] uppercase tracking-[0.2em] rounded-none active:scale-95 transition-all flex items-center justify-center gap-2 cursor-pointer shadow-[0_2px_8px_rgba(255,255,255,0.05)]"
+          >
+            <span>Reflect</span>
+            <ChevronRight className="w-3.5 h-3.5" />
+          </button>
+        </section>
       )}
 
     </div>

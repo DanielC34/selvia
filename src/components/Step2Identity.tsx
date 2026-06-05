@@ -17,6 +17,7 @@ export default function Step2Identity({
 }: Step2Props) {
   const [selected, setSelected] = useState<string>(initialArchetype);
   const [customText, setCustomText] = useState<string>(initialCustomText);
+  const [validationError, setValidationError] = useState<string | null>(null);
 
   // Clear radio checkboxes when the user types custom identity text
   useEffect(() => {
@@ -24,6 +25,11 @@ export default function Step2Identity({
       setSelected('custom');
     }
   }, [customText]);
+
+  // Clear validation errors when selection or custom text changes
+  useEffect(() => {
+    setValidationError(null);
+  }, [selected, customText]);
 
   const handleSelectArchetype = (id: string) => {
     setSelected(id);
@@ -41,11 +47,11 @@ export default function Step2Identity({
 
   const handleNext = () => {
     if (!selected) {
-      alert('Please select an identity focus or type your own.');
+      setValidationError('Please select an identity focus or type your own.');
       return;
     }
     if (selected === 'custom' && customText.trim().length === 0) {
-      alert('Please enter your custom identity focus.');
+      setValidationError('Please enter your custom identity focus.');
       return;
     }
     
@@ -239,6 +245,15 @@ export default function Step2Identity({
 
           {/* Action Button HUD */}
           <div className="w-full max-w-xs mx-auto text-center flex flex-col items-center gap-2 pt-2">
+            {validationError && (
+              <motion.div
+                initial={{ opacity: 0, y: -6 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="w-full p-3 bg-yellow-950/20 border border-yellow-500/20 text-yellow-500 text-[10px] font-mono uppercase tracking-widest rounded-lg mb-2"
+              >
+                {validationError}
+              </motion.div>
+            )}
             <button
               onClick={handleNext}
               className="w-full bg-white text-black font-headline font-bold text-xs uppercase tracking-[0.2em] py-4 rounded-none hover:bg-neutral-200 active:scale-95 transition-all duration-200 flex items-center justify-center gap-2 cursor-pointer"

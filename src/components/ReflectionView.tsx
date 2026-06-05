@@ -17,6 +17,7 @@ export default function ReflectionView({ userProfile, onUpdateProfile }: Reflect
   
   const [submittedToday, setSubmittedToday] = useState(false);
   const [saveSuccess, setSaveSuccess] = useState(false);
+  const [validationError, setValidationError] = useState<string | null>(null);
 
   // Load existing journal entries if registered for today
   useEffect(() => {
@@ -36,13 +37,22 @@ export default function ReflectionView({ userProfile, onUpdateProfile }: Reflect
     }
   }, [userProfile, currentDateKey]);
 
+  // Clear validation error when inputs are updated
+  useEffect(() => {
+    if (validationError && (draftBuild.trim() || draftLearn.trim() || draftGratitude.trim())) {
+      setValidationError(null);
+    }
+  }, [draftBuild, draftLearn, draftGratitude]);
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
     if (!draftBuild.trim() && !draftLearn.trim() && !draftGratitude.trim()) {
-      alert("Please write a brief entry before saving.");
+      setValidationError("Please write an entry in at least one field before saving.");
       return;
     }
+
+    setValidationError(null);
 
     const currentReflections = [...(userProfile.reflections || [])];
     const rest = currentReflections.filter(r => r.date !== currentDateKey);
@@ -101,10 +111,20 @@ export default function ReflectionView({ userProfile, onUpdateProfile }: Reflect
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -10 }}
-            className="p-3.5 bg-emerald-950/20 border border-emerald-500/20 text-emerald-400 text-xs font-mono uppercase tracking-widest text-center flex items-center justify-center gap-2"
+            className="p-3.5 bg-emerald-950/20 border border-emerald-500/20 text-emerald-400 text-xs font-mono uppercase tracking-widest text-center flex items-center justify-center gap-2 rounded-lg"
           >
             <Check className="w-4 h-4 stroke-[2.5]" />
             <span>Progress recorded</span>
+          </motion.div>
+        )}
+        {validationError && (
+          <motion.div
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -10 }}
+            className="p-3.5 bg-yellow-950/20 border border-yellow-500/20 text-yellow-500 text-xs font-mono uppercase tracking-widest text-center flex items-center justify-center gap-2 rounded-lg"
+          >
+            <span>{validationError}</span>
           </motion.div>
         )}
       </AnimatePresence>

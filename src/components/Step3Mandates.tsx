@@ -1,4 +1,4 @@
-import { useState, KeyboardEvent } from 'react';
+import { useState, useEffect, KeyboardEvent } from 'react';
 import { motion } from 'motion/react';
 import { ArrowLeft, ArrowRight, Check, Sparkles, Activity, BookOpen, Hammer, Plus, Trash2 } from 'lucide-react';
 import { CategoryMandates, MandateItem } from '../types';
@@ -11,12 +11,18 @@ interface Step3Props {
 
 export default function Step3Mandates({ initialMandates, onBack, onConfirm }: Step3Props) {
   const [mandates, setMandates] = useState<CategoryMandates>(initialMandates);
+  const [validationError, setValidationError] = useState<string | null>(null);
   const [inputs, setInputs] = useState({
     spiritualInput: '',
     physicalInput: '',
     intellectInput: '',
     builderInput: '',
   });
+
+  // Clear validation error when commitments change
+  useEffect(() => {
+    setValidationError(null);
+  }, [mandates]);
 
   // Handle toggling checkbox status
   const handleToggle = (category: keyof CategoryMandates, id: string) => {
@@ -74,7 +80,7 @@ export default function Step3Mandates({ initialMandates, onBack, onConfirm }: St
     // Validate we have at least one mandate checked across categories
     const totalSelected = (Object.values(mandates) as MandateItem[][]).flatMap((list) => list.filter((i) => i.completed)).length;
     if (totalSelected === 0) {
-      alert('Please establish at least one active commitment to proceed.');
+      setValidationError('Please establish at least one active commitment to proceed.');
       return;
     }
 
@@ -409,6 +415,15 @@ export default function Step3Mandates({ initialMandates, onBack, onConfirm }: St
 
           {/* Action HUD Buttons */}
           <div className="w-full max-w-xs mx-auto text-center flex flex-col items-center gap-2 pt-2">
+            {validationError && (
+              <motion.div
+                initial={{ opacity: 0, y: -6 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="w-full p-3 bg-yellow-950/20 border border-yellow-500/20 text-yellow-500 text-[10px] font-mono uppercase tracking-widest rounded-lg mb-2"
+              >
+                {validationError}
+              </motion.div>
+            )}
             <button
               onClick={handleNext}
               className="w-full bg-white text-black font-headline font-bold text-xs uppercase tracking-[0.2em] py-4 rounded-none hover:bg-neutral-200 active:scale-95 transition-all duration-200 flex items-center justify-center gap-2 cursor-pointer"
