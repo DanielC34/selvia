@@ -32,6 +32,89 @@ const getInitialMandatesDraft = (): CategoryMandates => ({
   ]
 });
 
+const CURRENT_STATE_VERSION = 1;
+
+// Migrate and validate loaded profile schemas dynamically to prevent key parameter corruption during updates
+export function migrateProfile(raw: any): UserProfile {
+  if (!raw || typeof raw !== 'object') {
+    throw new Error('Invalid raw profile structure');
+  }
+
+  const systemDate = new Date();
+  const todayStr = systemDate.getFullYear() + '-' + String(systemDate.getMonth() + 1).padStart(2, '0') + '-' + String(systemDate.getDate()).padStart(2, '0');
+
+  const defaultMandates = getInitialMandatesDraft();
+  const defaultActions = [
+    { id: 'act-sp', category: 'spiritual' as const, name: 'Morning Meditation (20m)', completed: false, xpValue: 100 },
+    { id: 'act-ph', category: 'physical' as const, name: 'Strength Training', completed: false, xpValue: 100 },
+    { id: 'act-rd', category: 'reading' as const, name: 'Stoic Philosophy (15 pgs)', completed: false, xpValue: 100 },
+    { id: 'act-cr', category: 'career' as const, name: 'Deep Work Block (2h)', completed: false, xpValue: 100 },
+    { id: 'act-bu', category: 'builder' as const, name: 'Side Project Commits', completed: false, xpValue: 100 }
+  ];
+
+  const migrated: UserProfile = {
+    email: typeof raw.email === 'string' ? raw.email.trim() : 'anonymous@selvia.app',
+    name: typeof raw.name === 'string' ? raw.name.trim() : 'Architect of Value',
+    password: typeof raw.password === 'string' ? raw.password : 'disciplined_character_2026',
+    archetypeId: typeof raw.archetypeId === 'string' ? raw.archetypeId : 'disciplined_builder',
+    customArchetypeText: typeof raw.customArchetypeText === 'string' ? raw.customArchetypeText : '',
+    onboardingCompleted: !!raw.onboardingCompleted,
+    streak: typeof raw.streak === 'number' && !isNaN(raw.streak) ? Math.max(0, raw.streak) : 1,
+    lifetimeXp: typeof raw.lifetimeXp === 'number' && !isNaN(raw.lifetimeXp) ? Math.max(0, raw.lifetimeXp) : 0,
+    xpToday: typeof raw.xpToday === 'number' && !isNaN(raw.xpToday) ? Math.max(0, raw.xpToday) : 0,
+    level: typeof raw.level === 'number' && !isNaN(raw.level) ? Math.max(1, raw.level) : 1,
+    unlockedAchievements: Array.isArray(raw.unlockedAchievements) ? raw.unlockedAchievements : [],
+    
+    mandates: (raw.mandates && typeof raw.mandates === 'object') ? {
+      spiritual: Array.isArray(raw.mandates.spiritual) ? raw.mandates.spiritual : defaultMandates.spiritual,
+      physical: Array.isArray(raw.mandates.physical) ? raw.mandates.physical : defaultMandates.physical,
+      intellect: Array.isArray(raw.mandates.intellect) ? raw.mandates.intellect : defaultMandates.intellect,
+      builder: Array.isArray(raw.mandates.builder) ? raw.mandates.builder : defaultMandates.builder
+    } : defaultMandates,
+
+    dailyActions: Array.isArray(raw.dailyActions) ? raw.dailyActions.map((act: any, idx: number) => ({
+      id: typeof act.id === 'string' ? act.id : `act-safe-${idx}`,
+      category: ['spiritual', 'physical', 'reading', 'career', 'builder'].includes(act.category) 
+        ? act.category 
+        : defaultActions[idx % defaultActions.length].category,
+      name: typeof act.name === 'string' ? act.name : 'Daily Task',
+      completed: !!act.completed,
+      xpValue: typeof act.xpValue === 'number' ? act.xpValue : 100
+    })) : defaultActions,
+
+    reflections: Array.isArray(raw.reflections) ? raw.reflections.map((ref: any) => ({
+      date: typeof ref.date === 'string' ? ref.date : todayStr,
+      build: typeof ref.build === 'string' ? ref.build : '',
+      learn: typeof ref.learn === 'string' ? ref.learn : '',
+      gratitude: typeof ref.gratitude === 'string' ? ref.gratitude : '',
+      submitted: !!ref.submitted
+    })) : [],
+
+    categoryXp: (raw.categoryXp && typeof raw.categoryXp === 'object') ? {
+      spiritual: typeof raw.categoryXp.spiritual === 'number' ? raw.categoryXp.spiritual : 0,
+      physical: typeof raw.categoryXp.physical === 'number' ? raw.categoryXp.physical : 0,
+      reading: typeof raw.categoryXp.reading === 'number' ? raw.categoryXp.reading : 0,
+      career: typeof raw.categoryXp.career === 'number' ? raw.categoryXp.career : 0,
+      builder: typeof raw.categoryXp.builder === 'number' ? raw.categoryXp.builder : 0
+    } : { spiritual: 0, physical: 0, reading: 0, career: 0, builder: 0 },
+
+    categoryStreaks: (raw.categoryStreaks && typeof raw.categoryStreaks === 'object') ? {
+      spiritual: typeof raw.categoryStreaks.spiritual === 'number' ? raw.categoryStreaks.spiritual : 0,
+      physical: typeof raw.categoryStreaks.physical === 'number' ? raw.categoryStreaks.physical : 0,
+      reading: typeof raw.categoryStreaks.reading === 'number' ? raw.categoryStreaks.reading : 0,
+      career: typeof raw.categoryStreaks.career === 'number' ? raw.categoryStreaks.career : 0,
+      builder: typeof raw.categoryStreaks.builder === 'number' ? raw.categoryStreaks.builder : 0
+    } : { spiritual: 0, physical: 0, reading: 0, career: 0, builder: 0 },
+
+    lastActiveDate: typeof raw.lastActiveDate === 'string' ? raw.lastActiveDate : todayStr,
+    lastCompletedDate: typeof raw.lastCompletedDate === 'string' ? raw.lastCompletedDate : undefined,
+    storedDayKey: typeof raw.storedDayKey === 'string' ? raw.storedDayKey : todayStr,
+    stateVersion: CURRENT_STATE_VERSION
+  };
+
+  return migrated;
+}
+
 // Seed static credentials inside localStorage so reviewers have immediate login access
 const seedDemoDatabase = () => {
   const registeredAccountsStr = localStorage.getItem('selvia_accounts');
@@ -65,21 +148,29 @@ const seedDemoDatabase = () => {
     ],
     unlockedAchievements: ['ach-7day', 'ach-30workout', 'ach-100session'],
     categoryXp: { spiritual: 1500, physical: 3200, reading: 2800, career: 4100, builder: 3500 },
-    categoryStreaks: { spiritual: 15, physical: 32, reading: 28, career: 41, builder: 35 }
+    categoryStreaks: { spiritual: 15, physical: 32, reading: 28, career: 41, builder: 35 },
+    stateVersion: CURRENT_STATE_VERSION
   };
 
   if (!registeredAccountsStr) {
-    localStorage.setItem('selvia_accounts', JSON.stringify([demoProfile]));
+    localStorage.setItem('selvia_accounts', JSON.stringify([migrateProfile(demoProfile)]));
   } else {
     // Merge demo profile if not already present so it's always testable
     try {
       const parsed: UserProfile[] = JSON.parse(registeredAccountsStr);
-      if (!parsed.some(acc => acc.email === demoProfile.email)) {
-        parsed.push(demoProfile);
-        localStorage.setItem('selvia_accounts', JSON.stringify(parsed));
+      const migratedAccounts = parsed.map(u => {
+        try {
+          return migrateProfile(u);
+        } catch {
+          return u;
+        }
+      });
+      if (!migratedAccounts.some(acc => acc.email === demoProfile.email)) {
+        migratedAccounts.push(migrateProfile(demoProfile));
       }
+      localStorage.setItem('selvia_accounts', JSON.stringify(migratedAccounts));
     } catch {
-      localStorage.setItem('selvia_accounts', JSON.stringify([demoProfile]));
+      localStorage.setItem('selvia_accounts', JSON.stringify([migrateProfile(demoProfile)]));
     }
   }
 };
@@ -106,9 +197,12 @@ export default function App() {
     const savedActiveSession = localStorage.getItem('selvia_active_session');
     if (savedActiveSession) {
       try {
-        const parsedProfile: UserProfile = JSON.parse(savedActiveSession);
-        setActiveUser(parsedProfile);
-        if (parsedProfile.onboardingCompleted) {
+        const parsedProfile = JSON.parse(savedActiveSession);
+        const migrated = migrateProfile(parsedProfile);
+        setActiveUser(migrated);
+        localStorage.setItem('selvia_active_session', JSON.stringify(migrated));
+        
+        if (migrated.onboardingCompleted) {
           // Skip onboarding splash directly into progression home
           setScreen('HOME');
           return;
@@ -131,19 +225,27 @@ export default function App() {
 
   // Syncing active-user updates to state and local storage databases
   const handleUpdateUserProfile = (updatedProfile: UserProfile) => {
-    setActiveUser(updatedProfile);
-    localStorage.setItem('selvia_active_session', JSON.stringify(updatedProfile));
+    try {
+      const sanitized = migrateProfile(updatedProfile);
+      setActiveUser(sanitized);
+      localStorage.setItem('selvia_active_session', JSON.stringify(sanitized));
 
-    // Also update account index database so it persists across logouts
-    const savedAccounts = localStorage.getItem('selvia_accounts');
-    if (savedAccounts) {
-      try {
-        const parsed: UserProfile[] = JSON.parse(savedAccounts);
-        const updatedList = parsed.map(u => u.email === updatedProfile.email ? updatedProfile : u);
-        localStorage.setItem('selvia_accounts', JSON.stringify(updatedList));
-      } catch (err) {
-        console.error('Core registry update failure:', err);
+      // Also update account index database so it persists across logouts
+      const savedAccounts = localStorage.getItem('selvia_accounts');
+      if (savedAccounts) {
+        try {
+          const parsed: UserProfile[] = JSON.parse(savedAccounts);
+          const updatedList = parsed.map(u => u.email === sanitized.email ? sanitized : u);
+          localStorage.setItem('selvia_accounts', JSON.stringify(updatedList));
+        } catch (err) {
+          console.error('Core registry update failure:', err);
+        }
       }
+    } catch (err) {
+      console.error('Corrupted profile update blocked:', err);
+      // Fallback update
+      setActiveUser(updatedProfile);
+      localStorage.setItem('selvia_active_session', JSON.stringify(updatedProfile));
     }
   };
 
@@ -156,13 +258,15 @@ export default function App() {
 
     try {
       const parsed: UserProfile[] = JSON.parse(savedAccounts);
-      const match = parsed.find(
+      const RawMatch = parsed.find(
         (u) => u.email.toLowerCase().trim() === email.toLowerCase().trim()
       );
 
-      if (!match) {
+      if (!RawMatch) {
         return 'Identity coordinates unregistered. Construct identity first.';
       }
+
+      const match = migrateProfile(RawMatch);
 
       if (match.password !== securityKey) {
         return 'Cryptographic key invalid. Verify descriptors.';
@@ -195,7 +299,7 @@ export default function App() {
     }
 
     // Merge draft onboarding progress if we are in draft sequence
-    const newProfile: UserProfile = {
+    const newRaw: any = {
       email: email.trim(),
       name: moniker.trim() || 'Anonymous Monk',
       password: securityKey,
@@ -219,6 +323,8 @@ export default function App() {
       categoryXp: { spiritual: 200, physical: 300, reading: 100, career: 450, builder: 400 },
       categoryStreaks: { spiritual: 4, physical: 5, reading: 2, career: 8, builder: 6 }
     };
+
+    const newProfile = migrateProfile(newRaw);
 
     const nextAccounts = [...existingAccounts, newProfile];
     localStorage.setItem('selvia_accounts', JSON.stringify(nextAccounts));

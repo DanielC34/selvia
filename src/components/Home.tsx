@@ -88,9 +88,14 @@ export default function Home({
       needsUpdate = true;
     }
 
-    // Set daily login record and verify daily reset
-    if (!updated.lastActiveDate) {
-      updated.lastActiveDate = todayStr;
+    // Set daily login record and verify daily reset with deterministic system day tracking
+    const systemDate = new Date();
+    const currentDayKey = systemDate.getFullYear() + '-' + String(systemDate.getMonth() + 1).padStart(2, '0') + '-' + String(systemDate.getDate()).padStart(2, '0');
+    const storedDayKey = updated.storedDayKey || updated.lastActiveDate || currentDayKey;
+
+    if (!updated.lastActiveDate || !updated.storedDayKey) {
+      updated.lastActiveDate = currentDayKey;
+      updated.storedDayKey = currentDayKey;
       needsUpdate = true;
     } else if (updated.lastActiveDate === 'simulate-tomorrow-pending') {
       // Manual test simulation reset
@@ -100,16 +105,18 @@ export default function Home({
       }));
       updated.xpToday = 0;
       updated.lastCompletedDate = undefined;
-      updated.lastActiveDate = todayStr;
+      updated.lastActiveDate = currentDayKey;
+      updated.storedDayKey = currentDayKey;
       needsUpdate = true;
-    } else if (updated.lastActiveDate !== todayStr) {
-      // Natural clock rollover reset
+    } else if (storedDayKey !== currentDayKey) {
+      // Clock rollover mismatch detected - reset daily progress safely
       updated.dailyActions = updated.dailyActions.map(action => ({
         ...action,
         completed: false
       }));
       updated.xpToday = 0;
-      updated.lastActiveDate = todayStr;
+      updated.lastActiveDate = currentDayKey;
+      updated.storedDayKey = currentDayKey;
       needsUpdate = true;
     }
 

@@ -78,4 +78,6 @@ export interface UserProfile {
   // Daily reset & completion tracking
   lastActiveDate?: string;
   lastCompletedDate?: string;
+  storedDayKey?: string;
+  stateVersion?: number;
 }
