@@ -34,12 +34,12 @@ export default function Home({
   onUpdateProfile
 }: HomeProps) {
   const [activeTab, setActiveTab] = useState<string>('home');
-  const [celebration, setCelebration] = useState(false);
 
-  // Guarantee profile has the extended progression fields loaded
+  // Guarantee profile has the extended progression fields loaded & check daily reset
   useEffect(() => {
     let needsUpdate = false;
     const updated = { ...userProfile };
+    const todayStr = new Date().toISOString().split('T')[0];
 
     if (updated.lifetimeXp === undefined) {
       updated.lifetimeXp = 124500;
@@ -88,24 +88,35 @@ export default function Home({
       needsUpdate = true;
     }
 
+    // Set daily login record and verify daily reset
+    if (!updated.lastActiveDate) {
+      updated.lastActiveDate = todayStr;
+      needsUpdate = true;
+    } else if (updated.lastActiveDate === 'simulate-tomorrow-pending') {
+      // Manual test simulation reset
+      updated.dailyActions = updated.dailyActions.map(action => ({
+        ...action,
+        completed: false
+      }));
+      updated.xpToday = 0;
+      updated.lastCompletedDate = undefined;
+      updated.lastActiveDate = todayStr;
+      needsUpdate = true;
+    } else if (updated.lastActiveDate !== todayStr) {
+      // Natural clock rollover reset
+      updated.dailyActions = updated.dailyActions.map(action => ({
+        ...action,
+        completed: false
+      }));
+      updated.xpToday = 0;
+      updated.lastActiveDate = todayStr;
+      needsUpdate = true;
+    }
+
     if (needsUpdate) {
       onUpdateProfile(updated);
     }
   }, [userProfile]);
-
-  // Track completion state of all daily actions
-  const dailyActions = userProfile.dailyActions || [];
-  const completedCount = dailyActions.filter(a => a.completed).length;
-  const totalCount = dailyActions.length || 5;
-
-  // Track celebration state when completing actions
-  useEffect(() => {
-    if (totalCount > 0 && completedCount === totalCount && userProfile.xpToday > 0) {
-      setCelebration(true);
-      const timer = setTimeout(() => setCelebration(false), 3000);
-      return () => clearTimeout(timer);
-    }
-  }, [completedCount, totalCount]);
 
   // Compute total xp level fraction (e.g., 1000 XP per level)
   const xpInCurrentLevel = userProfile.lifetimeXp % 1000;
@@ -120,35 +131,6 @@ export default function Home({
   return (
     <div className="min-h-screen bg-[#050505] text-[#E0E0E0] flex flex-col font-sans relative overflow-x-hidden select-none">
       
-      {/* Calm verification card overlay on daily 100% completion */}
-      <AnimatePresence>
-        {celebration && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 bg-black/85 z-50 flex flex-col items-center justify-center text-center p-6 backdrop-blur-sm"
-          >
-            <motion.div
-              initial={{ scale: 0.95, y: 15 }}
-              animate={{ scale: 1, y: 0 }}
-              exit={{ scale: 0.95, y: -15 }}
-              className="bg-[#0A0A0A] border border-[#222] p-8 md:p-12 rounded-lg max-w-sm flex flex-col items-center shadow-[0_4px_30px_rgba(255,255,255,0.01),0_0_50px_rgba(0,0,0,0.8)]"
-            >
-              <div className="w-14 h-14 bg-white/5 border border-white/10 rounded-full flex items-center justify-center mb-6">
-                <Sparkles className="w-6 h-6 text-white animate-pulse" />
-              </div>
-              <h2 className="font-serif italic font-light text-2xl text-white tracking-wide mb-2">
-                Mandates Controlled
-              </h2>
-              <p className="text-[10.5px] text-[#888] leading-relaxed tracking-wider uppercase">
-                You have fulfilled all daily non-negotiables. Your character core remains reinforced.
-              </p>
-            </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-
       {/* Persistent global app HUD header block */}
       <header className="w-full bg-[#050505]/95 backdrop-blur-md border-b border-[#111] sticky top-0 z-40 transition-all duration-300">
         <div className="max-w-5xl mx-auto flex justify-between items-center px-4 py-4 md:px-6">
@@ -251,6 +233,20 @@ export default function Home({
         >
           <RotateCcw className="w-3 h-3" />
           <span>Reset Path onboarding</span>
+        </button>
+        <button
+          onClick={() => {
+            const updated = {
+              ...userProfile,
+              lastActiveDate: 'simulate-tomorrow-pending'
+            };
+            onUpdateProfile(updated);
+          }}
+          className="bg-[#0A0A0A] border border-[#181818] hover:border-white/10 hover:text-emerald-400 text-[9px] font-mono uppercase tracking-[0.2em] py-1.5 px-3 rounded-none active:scale-95 transition-all flex items-center gap-1.5 cursor-pointer text-[#666]"
+          title="Simulate daily rollover reset manually"
+        >
+          <RotateCcw className="w-3 h-3" />
+          <span>Simulate Tomorrow (Reset Tool)</span>
         </button>
       </div>
 

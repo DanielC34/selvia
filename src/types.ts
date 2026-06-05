@@ -74,4 +74,8 @@ export interface UserProfile {
     career: number;
     builder: number;
   };
+
+  // Daily reset & completion tracking
+  lastActiveDate?: string;
+  lastCompletedDate?: string;
 }
